@@ -97,7 +97,7 @@
     {
       "celda": {
         "id": "F11C11",
-        "valor": 110
+        "valor": 110.0
       }
     },
     null,
@@ -187,7 +187,7 @@
     {
       "celda": {
         "id": "F1C1",
-        "valor": 10
+        "valor": 10.0
       }
     },
     {
