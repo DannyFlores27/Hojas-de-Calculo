@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-class Nodo implements Serializable {
+public class Nodo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Celda celda;
@@ -15,11 +15,11 @@ class Nodo implements Serializable {
         return celda;
     }
 
-    public Nodo getSiguiente() {
-        return siguiente;
-    }
-
     public void setSiguiente(Nodo siguiente) {
         this.siguiente = siguiente;
+    }
+
+    public Nodo getSiguiente() {
+        return siguiente;
     }
 }

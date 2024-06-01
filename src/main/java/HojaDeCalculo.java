@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 public class HojaDeCalculo extends JFrame {
     private static final int NUM_FILAS = 20;
@@ -69,44 +72,17 @@ public class HojaDeCalculo extends JFrame {
         JPanel panelSecundario = new JPanel(new BorderLayout());
         lblFilaColumna = new JLabel("Fila: - Columna: -");
         txtEntrada = new JTextField();
-        JButton btnSumar = new JButton("Sumar");
-        JButton btnRestar = new JButton("Restar");
-        JButton btnMultiplicar = new JButton("Multiplicar");
-        JButton btnDividir = new JButton("Dividir");
+        JButton btnProcesar = new JButton("Procesar");
 
-        btnSumar.addActionListener(new ActionListener() {
+        btnProcesar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                realizarOperacion("sumar");
+                procesarEntrada();
             }
         });
-
-        btnRestar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                realizarOperacion("restar");
-            }
-        });
-
-        btnMultiplicar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                realizarOperacion("multiplicar");
-            }
-        });
-
-        btnDividir.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                realizarOperacion("dividir");
-            }
-        });
-
-        JPanel panelOperaciones = new JPanel();
-        panelOperaciones.add(btnSumar);
-        panelOperaciones.add(btnRestar);
-        panelOperaciones.add(btnMultiplicar);
-        panelOperaciones.add(btnDividir);
 
         panelSecundario.add(lblFilaColumna, BorderLayout.WEST);
         panelSecundario.add(txtEntrada, BorderLayout.CENTER);
-        panelSecundario.add(panelOperaciones, BorderLayout.EAST);
+        panelSecundario.add(btnProcesar, BorderLayout.EAST);
 
         add(panelSecundario, BorderLayout.NORTH);
 
@@ -129,29 +105,130 @@ public class HojaDeCalculo extends JFrame {
         }
     }
 
-    private void realizarOperacion(String operacion) {
-        int fila1 = tabla.getSelectedRow();
-        int columna1 = tabla.getSelectedColumn();
-        int fila2 = -1;
-        int columna2 = -1;
+    private void procesarEntrada() {
+        String entrada = txtEntrada.getText().trim();
+        int fila = tabla.getSelectedRow();
+        int columna = tabla.getSelectedColumn();
+
+        if (fila == -1 || columna == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una celda primero.");
+            return;
+        }
+
+        if (entrada.startsWith("=")) {
+            try {
+                String[] partes = entrada.substring(1).split("\\(");
+                String operacion = partes[0].toLowerCase();
+                String[] celdas = partes[1].replace(")", "").split(",");
+
+                double resultado = 0;
+                switch (operacion) {
+                    case "suma":
+                        for (String celda : celdas) {
+                            int[] pos = parseCelda(celda);
+                            resultado += obtenerValorCelda(pos[0], pos[1]);
+                        }
+                        break;
+                    case "resta":
+                        resultado = obtenerValorCelda(parseCelda(celdas[0])[0], parseCelda(celdas[0])[1]);
+                        for (int i = 1; i < celdas.length; i++) {
+                            int[] pos = parseCelda(celdas[i]);
+                            resultado -= obtenerValorCelda(pos[0], pos[1]);
+                        }
+                        break;
+                    case "mult":
+                        if (celdas.length != 2) {
+                            throw new IllegalArgumentException("La operación multiplicación requiere exactamente 2 celdas.");
+                        }
+                        resultado = obtenerValorCelda(parseCelda(celdas[0])[0], parseCelda(celdas[0])[1])
+                                * obtenerValorCelda(parseCelda(celdas[1])[0], parseCelda(celdas[1])[1]);
+                        break;
+                    case "div":
+                        if (celdas.length != 2) {
+                            throw new IllegalArgumentException("La operación división requiere exactamente 2 celdas.");
+                        }
+                        resultado = obtenerValorCelda(parseCelda(celdas[0])[0], parseCelda(celdas[0])[1])
+                                / obtenerValorCelda(parseCelda(celdas[1])[0], parseCelda(celdas[1])[1]);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Operación no soportada.");
+                }
+
+                matriz.insertarCelda(fila, columna, resultado);
+                tabla.setValueAt(resultado, fila, columna);
+                ((DefaultTableModel) tabla.getModel()).fireTableCellUpdated(fila, columna); // Actualizar la tabla
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error en la entrada: " + ex.getMessage());
+            }
+        } else {
+            matriz.insertarCelda(fila, columna, entrada);
+            tabla.setValueAt(entrada, fila, columna);
+            ((DefaultTableModel) tabla.getModel()).fireTableCellUpdated(fila, columna); // Actualizar la tabla
+        }
+    }
+
+
+    private double obtenerValorCelda(int fila, int columna) {
+        Object valor = tabla.getValueAt(fila, columna);
+        if (valor instanceof String && ((String) valor).startsWith("=")) {
+            String formula = ((String) valor).substring(1);
+            return evaluarFormula(formula);
+        } else if (valor instanceof Number) {
+            return ((Number) valor).doubleValue();
+        } else if (valor == null || valor.toString().isEmpty()) {
+            return 0; // Si la celda está vacía, devolvemos 0
+        } else {
+            try {
+                // Intentamos convertir el valor a un número
+                return Double.parseDouble(valor.toString());
+            } catch (NumberFormatException e) {
+                // Si no se puede convertir a número, lanzamos una excepción
+                throw new IllegalArgumentException("La celda " + fila + "," + columna + " no contiene un valor numérico.");
+            }
+        }
+    }
+
+
+    private double evaluarFormula(String formula) {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
 
         try {
-            String[] partes = txtEntrada.getText().split(",");
-            fila2 = Integer.parseInt(partes[0]);
-            columna2 = Integer.parseInt(partes[1]);
+            Object result = engine.eval(formula);
+            if (result instanceof Number) {
+                return ((Number) result).doubleValue();
+            } else {
+                throw new IllegalArgumentException("La fórmula no produce un valor numérico.");
+            }
+        } catch (ScriptException e) {
+            throw new IllegalArgumentException("Error al evaluar la fórmula: " + e.getMessage());
+        }
+    }
 
-            String resultado = matriz.realizarOperacion(fila1, columna1, fila2, columna2, operacion);
-            JOptionPane.showMessageDialog(this, "Resultado: " + resultado);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: Entrada no válida. Use el formato 'fila,columna'");
+    private int[] parseCelda(String celda) {
+        int fila = Integer.parseInt(celda.substring(1, celda.indexOf('C')));
+        int columna = Integer.parseInt(celda.substring(celda.indexOf('C') + 1));
+        return new int[]{fila, columna};
+    }
+
+    private double getValorCelda(int fila, int columna) {
+        Object valor = matriz.obtenerCelda(fila, columna);
+        if (valor instanceof Number) {
+            return ((Number) valor).doubleValue();
+        } else {
+            throw new IllegalArgumentException("La celda " + fila + "," + columna + " no contiene un valor numérico.");
         }
     }
 
     private void mostrarManualUsuario() {
         JOptionPane.showMessageDialog(this, "Manual de Usuario:\n" +
                 "1. Seleccione una celda haciendo clic en ella.\n" +
-                "2. Ingrese los datos en el cuadro de texto y presione Enter.\n" +
-                "3. Para realizar operaciones, seleccione una celda y luego ingrese 'fila,columna' en el cuadro de texto.");
+                "2. Ingrese los datos en el cuadro de texto y presione 'Procesar'.\n" +
+                "3. Para realizar operaciones, ingrese la fórmula en el formato:\n" +
+                "   =suma(F1C1,F2C2,...) para suma\n" +
+                "   =resta(F1C1,F2C2,...) para resta\n" +
+                "   =mult(F1C1,F2C2) para multiplicación\n" +
+                "   =div(F1C1,F2C2) para división");
     }
 
     private void guardarArchivo() {
@@ -182,6 +259,4 @@ public class HojaDeCalculo extends JFrame {
             }
         }
     }
-
-
 }

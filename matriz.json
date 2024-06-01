@@ -15,7 +15,19 @@
     null,
     null,
     null,
+    {
+      "celda": {
+        "id": "F2C11",
+        "valor": 230.0
+      }
+    },
     null,
+    {
+      "celda": {
+        "id": "F2C13",
+        "valor": 10.0
+      }
+    },
     null,
     null,
     null,
@@ -75,11 +87,19 @@
     null,
     null,
     null,
+    {
+      "celda": {
+        "id": "F4C11",
+        "valor": 230.0
+      }
+    },
     null,
-    null,
-    null,
-    null,
-    null,
+    {
+      "celda": {
+        "id": "F4C13",
+        "valor": 40.0
+      }
+    },
     null,
     null,
     null,
@@ -151,6 +171,12 @@
     null,
     null,
     null,
+    {
+      "celda": {
+        "id": "F6C13",
+        "valor": 1.3636363636363635
+      }
+    },
     null,
     null,
     null,
@@ -162,10 +188,19 @@
     null,
     null,
     null,
+    {
+      "celda": {
+        "id": "F0C11",
+        "valor": 210.0
+      }
+    },
     null,
-    null,
-    null,
-    null,
+    {
+      "celda": {
+        "id": "F0C13",
+        "valor": 210.0
+      }
+    },
     null,
     null,
     null,
@@ -187,7 +222,7 @@
     {
       "celda": {
         "id": "F1C1",
-        "valor": 10.0
+        "valor": 120.0
       }
     },
     {
@@ -210,6 +245,12 @@
     null,
     null,
     null,
+    {
+      "celda": {
+        "id": "F1C17",
+        "valor": 230.0
+      }
+    },
     null,
     null,
     null,
@@ -222,8 +263,12 @@
     null,
     null,
     null,
-    null,
-    null,
+    {
+      "celda": {
+        "id": "F8C13",
+        "valor": 16500.0
+      }
+    },
     null
   ]
 }
