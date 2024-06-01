@@ -7,7 +7,7 @@ Para ejecutar la aplicación de hojas de cálculo, asegúrese de tener instalado
 
 Java Runtime Environment (JRE) versión 8 o superior.
 Instalación
-No se requiere instalación para ejecutar la aplicación de hojas de cálculo. Simplemente ejecute el archivo JAR proporcionado.
+Se requiere un IDE para ejecutar la aplicación de hojas de cálculo. Simplemente exporte y ejecute el archivo zip proporcionado.
 
 Funcionalidades Principales
 La aplicación de hojas de cálculo proporciona las siguientes funcionalidades principales:
@@ -37,8 +37,8 @@ Una vez que tenga abierto un libro de cálculo, puede realizar las siguientes ac
 Haga clic en una celda para seleccionarla.
 Escriba un valor directamente en la celda seleccionada.
 Para realizar operaciones matemáticas, escriba una fórmula en una celda comenzando con el signo "=".
-Por ejemplo: "=SUMA(A1,A2)" sumará los valores de las celdas A1 y A2.
-Presione Enter para aplicar la fórmula.
+Por ejemplo: "=SUMA(F0C0,F1C1)" sumará los valores de las celdas F0C0 y F1C1.
+Presione PROCESAR para aplicar la fórmula.
 Guardar el Libro de Cálculo:
 
 El libro de cálculo se guarda automáticamente al cerrar la aplicación.
@@ -49,7 +49,6 @@ Si experimenta algún problema con la aplicación, intente lo siguiente:
 Verifique que tenga instalado Java Runtime Environment (JRE) versión 8 o superior.
 Asegúrese de estar utilizando la última versión de la aplicación.
 Si el problema persiste, comuníquese con el soporte técnico.
-Contacto
 
 ¡Gracias por utilizar la aplicación de hojas de cálculo!
 
@@ -91,6 +90,5 @@ Se han realizado pruebas unitarias para garantizar el funcionamiento correcto de
 Limitaciones Conocidas
 La aplicación actualmente tiene un tamaño de hoja de cálculo fijo (20x20 celdas) que puede ser ampliado en futuras versiones.
 No se admiten todas las funciones de una hoja de cálculo avanzada como Excel.
-Contacto
 
 ¡Gracias por contribuir al desarrollo de la aplicación de hojas de cálculo!
